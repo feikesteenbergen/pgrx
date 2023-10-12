@@ -76,6 +76,12 @@ impl<T> PgLwLock<T> {
         self.inner.get().expect("Can't give out exclusive, lock is in an empty state").exclusive()
     }
 
+    /// Try to obtain an exclusive lock (which comes with `&mut T` access). Returns `None` if the lock
+    /// is in an empty state
+    pub fn try_exclusive(&self) -> Option<PgLwLockExclusiveGuard<T>> {
+        self.inner.get().map(|i| i.exclusive())
+    }
+
     /// Attach an empty PgLwLock lock to a LWLock, and wrap T
     pub fn attach(&self, value: *mut T) {
         self.inner
